@@ -1,0 +1,26 @@
+{
+  path: "[[&path]]",
+  [[#index]]
+  index: true,
+  [[/index]]
+  [[#element]]
+  element: <React.Suspense fallback={<Skeleton type="list" />}>
+    <[[&element]] />
+  </React.Suspense>,
+  [[/element]]
+
+  [[^element]]
+  lazy: async () => {
+    console.log("🚀 ~ lazy: ~ item.component:", "[[&component]]");
+    const Component = await import("[[&component]]");
+    console.log("🚀 ~ lazy: ~ component:", Component);
+
+    return Component;
+  },
+  [[/element]]
+  [[#routes]]
+  children: [
+    [[>RecurseLazyRouters]]
+  ]
+  [[/routes]]
+},

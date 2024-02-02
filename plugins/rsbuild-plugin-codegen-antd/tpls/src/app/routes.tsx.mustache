@@ -1,0 +1,25 @@
+import { createBrowserRouter } from "react-router-dom";
+import { Layout } from "./layout";
+
+[[#routeImports]]
+[[&import]]
+[[/routeImports]]
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout></Layout>,
+    children: [
+      [[#rootRoute]]
+      [[>RecurseLazyRouters]]
+      [[/rootRoute]]
+    ]
+  },
+]);
+
+
+export const routes = [
+  [[#rootRoute]]
+  [[>RecurseRoutes]]
+  [[/rootRoute]]
+]

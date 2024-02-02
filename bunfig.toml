@@ -1,0 +1,7 @@
+[install]
+registry = "https://registry.npmmirror.com/"
+
+[install.scopes]
+"@done" = "http://npm.relxtech.com/"
+"@rlx" = "http://npm.relxtech.com/"
+"@relx" = "http://npm.relxtech.com/"
