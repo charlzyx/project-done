@@ -1,20 +1,7 @@
-import type { RsbuildPlugin, RsbuildPluginAPI } from "@rsbuild/core";
+import type { RsbuildPlugin } from "@rsbuild/core";
 import chokidar from "chokidar";
-import fs, { PathLike } from "fs";
 import path from "path";
-import mustache from "mustache";
-import { gen, GenOptions, checkDeps, MatchRule } from "./utils";
-import validatePkgName from "validate-npm-package-name";
-import { match, scan } from "./utils";
-
-const tplRoot = path.resolve(__dirname, "./tpls");
-const fragmentRoot = path.resolve(__dirname, "./fragments");
-const deps = [
-  "@ant-design/icons@^5.3.0",
-  "@ant-design/pro-components@^2.6.49",
-  "@emotion/css@^11.11.2",
-  "antd@^5.13.3",
-];
+import { copy, scan } from "@achaogpt/kakashi";
 
 const scanRoute = (pagesRoot: string, prefix: string) => {
   const imports = [
@@ -50,7 +37,6 @@ const scanRoute = (pagesRoot: string, prefix: string) => {
       );
       tree[parent].routes.push({
         element: pathToName(base),
-        name: pathToName(base, true),
         path: base.replace(`${parent}/`, ""),
         component: `${prefix}${base}`,
         routes: null,
@@ -62,8 +48,8 @@ const scanRoute = (pagesRoot: string, prefix: string) => {
         )} = React.lazy(() => import('${prefix}${base}'));`,
       );
       tree[base] = {
+        index: /index\.(ts|tsx)$/.test(base),
         element: pathToName(base),
-        name: pathToName(base, true),
         path: base,
         component: `${prefix}${base}`,
         routes: null,
@@ -81,6 +67,7 @@ export const pluginCodegenAntd = ({ autoInstall = false }): RsbuildPlugin => ({
   name: "plugin-codegen-antd",
   async setup(api) {
     const root = api.context.rootPath;
+    const tplRoot = path.resolve(__dirname, "./templates");
 
     const codegen = () => {
       const [routeImports, rootRoute] = scanRoute(
@@ -91,48 +78,36 @@ export const pluginCodegenAntd = ({ autoInstall = false }): RsbuildPlugin => ({
         routeImports,
         rootRoute,
       };
-      gen({
+      copy({
         tplRoot: tplRoot,
-        fragmentRoot,
         data,
         outRoot: root,
+        tags: ["[[", "]]"],
         overwrite: /routes/,
       });
     };
 
-    const packageJSON = JSON.parse(
-      fs.readFileSync(path.resolve(root, "package.json")).toString(),
-    ) as any;
-
     const watcher = chokidar.watch(
       path.resolve(root, "src/pages/**/index.tsx"),
       {
-        // 忽略不是 index.tsx 结尾的
-        // ignored: /^.*(?<!index\.(ts|tsx))$/,
-        // ignored: /(^|[\/\\])\../,
-        persistent: true,
+        interval: 1000,
       },
     );
     watcher
       .on("add", () => {
-        console.log("新增了一个文件,重新生成路由");
         codegen();
       })
       .on("unlink", () => {
-        console.log("删除了一个文件,重新生成路由");
         codegen();
       })
       .on("addDir", () => {
-        console.log("添加了一个文件夹,重新生成路由");
         codegen();
       })
       .on("unlinkDir", () => {
-        console.log("删除了一个文件夹,重新生成路由");
         codegen();
       });
 
     api.onBeforeCreateCompiler(() => {
-      checkDeps(packageJSON, deps, autoInstall);
       codegen();
     });
   },

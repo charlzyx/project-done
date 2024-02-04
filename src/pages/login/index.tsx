@@ -21,12 +21,10 @@ import { useState } from "react";
 type LoginType = "phone" | "account";
 
 export default () => {
-  const { token } = theme.useToken();
   const [loginType, setLoginType] = useState<LoginType>("phone");
 
   const iconStyles: CSSProperties = {
     marginInlineStart: "16px",
-    color: setAlpha(token.colorTextBase, 0.2),
     fontSize: "24px",
     verticalAlign: "middle",
     cursor: "pointer",
@@ -92,22 +90,12 @@ export default () => {
                     };
                     const status = getStatus();
                     if (status === "pass") {
-                      return (
-                        <div style={{ color: token.colorWarning }}>
-                          强度：中
-                        </div>
-                      );
+                      return <div style={{ color: "blue" }}>强度：中</div>;
                     }
                     if (status === "ok") {
-                      return (
-                        <div style={{ color: token.colorSuccess }}>
-                          强度：强
-                        </div>
-                      );
+                      return <div style={{ color: "green" }}>强度：强</div>;
                     }
-                    return (
-                      <div style={{ color: token.colorError }}>强度：弱</div>
-                    );
+                    return <div style={{ color: "yellow" }}>强度：弱</div>;
                   },
                 }}
                 placeholder={"密码: ant.design"}

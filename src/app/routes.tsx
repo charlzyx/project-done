@@ -3,7 +3,7 @@ import { Layout } from "./layout";
 
 import Skeleton from '@ant-design/pro-skeleton';
 import React from 'react';
-const Home = React.lazy(() => import('../pages/home'));
+const Else = React.lazy(() => import('../pages/else'));
 const Login = React.lazy(() => import('../pages/login'));
 const Index = React.lazy(() => import('../pages/index'));
 const Admin = React.lazy(() => import('../pages/admin'));
@@ -15,9 +15,9 @@ export const router = createBrowserRouter([
     element: <Layout></Layout>,
     children: [
       {
-        path: "/home",
+        path: "/else",
         element: <React.Suspense fallback={<Skeleton type="list" />}>
-          <Home />
+          <Else />
         </React.Suspense>,
 
       },
@@ -58,34 +58,19 @@ export const router = createBrowserRouter([
 
 export const routes = [
   {
-    name: "Home",
-    path: "/home",
-    icon: "",
-    access: "",
+    path: "/else",
   },
   {
-    name: "Login",
     path: "/login",
-    icon: "",
-    access: "",
   },
   {
-    name: "Index",
     path: "/index",
-    icon: "",
-    access: "",
   },
   {
-    name: "Admin",
     path: "/admin",
-    icon: "",
-    access: "",
     routes: [
       {
-        name: "Dashboard",
         path: "dashboard",
-        icon: "",
-        access: "",
       },
     ]
   },

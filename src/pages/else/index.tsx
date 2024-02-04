@@ -1,5 +1,5 @@
 export const Component = () => {
-  return <div>HOME</div>;
+  return <div>ELSE</div>;
 };
 
 export default Component;
