@@ -1,5 +1,10 @@
 import { routes } from "./routes";
-import { HomeOutlined, DashboardOutlined } from "@ant-design/icons";
+import {
+  MenuOutlined,
+  HomeOutlined,
+  DashOutlined,
+  DashboardOutlined,
+} from "@ant-design/icons";
 
 const config = [
   {
@@ -7,28 +12,21 @@ const config = [
     path: "/login",
   },
   {
-    name: "首页",
-    icon: <HomeOutlined />,
-    hidden: true,
-    path: "/index",
+    name: "菜单管理",
+    icon: <MenuOutlined />,
+    path: "/menu",
   },
-  {
-    name: "其他",
-    icon: <HomeOutlined />,
-    path: "/else",
-  },
-  {
-    name: "管理",
-    icon: <DashboardOutlined />,
-    path: "/admin",
-    routes: [
-      {
-        name: "看板",
-        icon: <DashboardOutlined />,
-        path: "dashboard",
-      },
-    ],
-  },
+  // {
+  //   name: "管理",
+  //   icon: <DashboardOutlined />,
+  //   path: "/admin",
+  //   routes: [
+  //     {
+  //       name: "看板",
+  //       path: "dashboard",
+  //     },
+  //   ],
+  // },
 ];
 
 const merge = (

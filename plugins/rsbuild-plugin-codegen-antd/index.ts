@@ -14,12 +14,19 @@ const scanRoute = (pagesRoot: string, prefix: string) => {
   files.sort((a, b) => {
     return a.length - b.length > 0 ? 1 : -1;
   });
+
+  const filePathToUrl = (x: string) => {
+    return x.replace(/\$/g, ":");
+  };
+
   const pathToName = (x: string, last = false) => {
     if (last) {
       const segs = x.split("/");
-      return segs[segs.length - 1].replace(/\w/, (m) => m.toUpperCase());
+      return segs[segs.length - 1].replace(/\$?\w/, (m) =>
+        m.replace("$", "By").toUpperCase(),
+      );
     } else {
-      return x.replace(/\/\w/g, (m) => m.replace("/", "").toUpperCase());
+      return x.replace(/\/\$?\w/g, (m) => m.replace(/\$?\//, "").toUpperCase());
     }
   };
   const routes = files.reduce((tree, file) => {
@@ -37,7 +44,7 @@ const scanRoute = (pagesRoot: string, prefix: string) => {
       );
       tree[parent].routes.push({
         element: pathToName(base),
-        path: base.replace(`${parent}/`, ""),
+        path: filePathToUrl(base.replace(`${parent}/`, "")),
         component: `${prefix}${base}`,
         routes: null,
       });
@@ -50,7 +57,7 @@ const scanRoute = (pagesRoot: string, prefix: string) => {
       tree[base] = {
         index: /index\.(ts|tsx)$/.test(base),
         element: pathToName(base),
-        path: base,
+        path: filePathToUrl(base),
         component: `${prefix}${base}`,
         routes: null,
       };
@@ -78,13 +85,15 @@ export const pluginCodegenAntd = ({ autoInstall = false }): RsbuildPlugin => ({
         routeImports,
         rootRoute,
       };
-      copy({
-        tplRoot: tplRoot,
-        data,
-        outRoot: root,
-        tags: ["[[", "]]"],
-        overwrite: /routes/,
-      });
+      try {
+        copy({
+          tplRoot: tplRoot,
+          data,
+          outRoot: root,
+          tags: ["[[", "]]"],
+          overwrite: /routes/,
+        });
+      } catch (error) {}
     };
 
     const watcher = chokidar.watch(
