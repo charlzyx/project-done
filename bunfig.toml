@@ -2,4 +2,4 @@
 registry = "https://registry.npmmirror.com/"
 
 [install.scopes]
-"@scope" = "http://corp.npmregistry.com/"
+"@done" = "http://npm.relxtech.com/"

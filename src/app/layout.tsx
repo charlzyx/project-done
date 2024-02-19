@@ -28,7 +28,6 @@ const useMenus = () => {
   const once = useRef(false);
 
   const [menus, setMenus] = useState(getMenus());
-  console.log(`🚀 ~ menus:`, menus);
 
   useEffect(() => {
     if (once.current) return;
@@ -98,7 +97,7 @@ export const Layout: React.FC<React.PropsWithChildren> = (props) => {
                 </div>
               )}
             >
-              <PageContainer>
+              <PageContainer style={{ flex: 1, overflow: "auto" }}>
                 {loading ? (
                   <ProSkeleton type="result"></ProSkeleton>
                 ) : (
