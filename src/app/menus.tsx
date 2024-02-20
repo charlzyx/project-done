@@ -15,6 +15,7 @@ const config = [
     name: "菜单管理",
     icon: <MenuOutlined />,
     path: "/menu",
+    routes: [],
   },
   // {
   //   name: "管理",

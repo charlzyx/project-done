@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useMatch, useParams } from "react-router-dom";
+import { useMatch, useMatches, useParams, useRoutes } from "react-router-dom";
+import React from "react";
 import {
   Studio,
   PreviewWidget,
   transformToTreeNode,
 } from "../../../components/Studio";
 import { page } from "../../../services/page";
-import { ProSkeleton } from "@ant-design/pro-components";
-import { Button, Space } from "antd";
+import {
+  PageLoading,
+  ProBreadcrumb,
+  ProPageHeader,
+} from "@ant-design/pro-components";
+import { Button, Empty, Space } from "antd";
+import { useMenus } from "../../../app/layout";
+import { FontColorsOutlined } from "@ant-design/icons";
 
 const usePageQuery = () => {
   const [tree, setTree] = useState<any>({});
@@ -49,17 +56,48 @@ const usePageQuery = () => {
   return { tree, store, loading };
 };
 
+const usePageBreadCurmb = () => {
+  const matches = useMatches();
+  const menus = useMenus();
+  const match = matches[matches.length - 1];
+  let title = "";
+
+  const find = (list: typeof menus, chain: any[] = []) => {
+    list.forEach((menu: any) => {
+      if (menu.link === match.pathname) {
+        chain.push({
+          path: menu.link,
+          breadcrumbName: menu.name,
+        });
+        title = menu.name;
+      } else if (menu.routes) {
+        const isMyChild = find(menu.routes);
+        if (isMyChild.length > 0) {
+          chain.push(...isMyChild);
+          chain.push({
+            path: menu.link,
+            breadcrumbName: menu.name,
+          });
+        }
+      }
+    });
+    chain.reverse();
+    return chain;
+  };
+  const list = find(menus);
+  return [list, title] as const;
+};
+
+const PageHeader: React.FC = (props: { showTitle?: boolean }) => {
+  const [breadcurmbs, title] = usePageBreadCurmb();
+
+  return <ProBreadcrumb routes={breadcurmbs}></ProBreadcrumb>;
+};
+
 const Page = () => {
   const [mode, setMode] = useState<"preview" | "edit">("preview");
   const { loading, store, tree } = usePageQuery();
   const params = useParams();
-  const dd = useRef<any>({
-    get: () => {},
-    set: () => {},
-    loader: () => {
-      return tree;
-    },
-  });
 
   useEffect(() => {
     setMode("preview");
@@ -74,27 +112,43 @@ const Page = () => {
     }
   }, [mode]);
 
-  return loading ? (
-    <ProSkeleton></ProSkeleton>
-  ) : mode === "preview" ? (
-    <div>
-      <Space>
-        <Button onClick={() => setMode("edit")} type="primary">
-          编辑
-        </Button>
-      </Space>
-      <PreviewWidget tree={transformToTreeNode(tree) as any}></PreviewWidget>
-    </div>
-  ) : (
-    <Studio
-      schema={tree}
-      onSave={(json) => {
-        return store.save(json).then(() => {
-          setMode("preview");
-          return store.query();
-        });
-      }}
-    ></Studio>
+  return (
+    <React.Fragment>
+      <PageHeader></PageHeader>
+      {loading ? (
+        <PageLoading></PageLoading>
+      ) : mode === "preview" ? (
+        <div>
+          <Space style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              icon={<FontColorsOutlined></FontColorsOutlined>}
+              onClick={() => setMode("edit")}
+              type="primary"
+            >
+              设计
+            </Button>
+          </Space>
+          {/* {JSON.stringify(tree, null, 2)} */}
+          {tree.form ? (
+            <PreviewWidget
+              tree={transformToTreeNode(tree) as any}
+            ></PreviewWidget>
+          ) : (
+            <Empty></Empty>
+          )}
+        </div>
+      ) : (
+        <Studio
+          schema={tree}
+          onSave={(json) => {
+            return store.save(json).then(() => {
+              setMode("preview");
+              return store.query();
+            });
+          }}
+        ></Studio>
+      )}
+    </React.Fragment>
   );
 };
 

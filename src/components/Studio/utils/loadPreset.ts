@@ -72,16 +72,13 @@ const loadCSS = (url: string) => {
 };
 
 export const loadPreset = async (props: ILoadScriptProps) => {
+  if (anyGlobal[props.root]) return anyGlobal[props.root];
   // prepare
   Object.keys(GlobalDeps).forEach((name) => {
     (window as any)[name] = GlobalDeps[name as keyof typeof GlobalDeps];
   });
-  const options: ILoadScriptProps = {
-    // base: "http://localhost:4567",
-    ...props,
-  };
+
   const base = getNpmCDNRegistry();
-  if (anyGlobal[props.root]) return anyGlobal[options.root];
   // localhost:4567/@done/preset-antd@1.0.0-beta.0/dist/umd/deps.min.js
   const basepath = `${base}/${props.package}/dist/umd`;
   // const path = `${options.base}/${options.package}/${options.entry}`;
@@ -90,7 +87,12 @@ export const loadPreset = async (props: ILoadScriptProps) => {
     loadScript(`${basepath}/deps.min.js`, "DoneDeps"),
   ])
     .then(() => {
-      return loadScript(`${basepath}/preset.min.js`, "DonePreset");
+      return loadScript(`${basepath}/preset.min.js`, "DonePreset").then(
+        (mod) => {
+          anyGlobal[props.root] = mod;
+          return mod;
+        },
+      );
     })
     .catch((err) => {
       console.log("errr", err);

@@ -233,13 +233,6 @@ export const schema: ISchema = {
                 schema: {
                   type: "void",
                   properties: {
-                    parentCode: {
-                      title: "上级code",
-                      type: "string",
-                      "x-read-pretty": true,
-                      "x-decorator": "FormItem",
-                      "x-component": "Input",
-                    },
                     name: {
                       title: "名称",
                       "x-decorator": "FormItem",

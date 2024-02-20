@@ -14,8 +14,6 @@ services:
     environment:
       - HOST=127.0.0.1
       - NPM_REGISTRY_URL=http://npm.relxtech.com
-    ports:
-      - "4567:4567"
     volumes:
       - "./.cache:/cache"
 

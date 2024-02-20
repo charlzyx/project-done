@@ -19,15 +19,3 @@ export const loadInitialSchema = (designer: Engine, schema: any) => {
     console.log(`🚀 ~ loadInitialSchema ~ err:`, err);
   }
 };
-
-export const helper = (designer: Engine) => {
-  return {
-    get: () => {
-      const tree = transformToSchema(designer.getCurrentTree()!);
-      return tree;
-    },
-    set: (schema: any) => {
-      designer.setCurrentTree(transformToTreeNode(schema));
-    },
-  };
-};

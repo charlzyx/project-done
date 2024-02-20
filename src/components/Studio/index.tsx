@@ -17,10 +17,10 @@ import {
   WorkspacePanel,
 } from "@done/react";
 import { SettingsForm, setNpmCDNRegistry } from "@done/settings-form";
-import "antd/dist/antd.less";
+import "./style.css";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { helper, saveSchema, loadPreset, transformToTreeNode } from "./utils";
+import { saveSchema, loadPreset, transformToTreeNode } from "./utils";
 import {
   ActionsWidget,
   MarkupSchemaWidget,
@@ -29,7 +29,7 @@ import {
 } from "./widgets";
 export { PreviewWidget } from "./widgets";
 export { transformToTreeNode } from "./utils";
-import { ProSkeleton } from "@ant-design/pro-components";
+import { PageLoading } from "@ant-design/pro-components";
 
 // setNpmCDNRegistry("//unpkg.com");
 setNpmCDNRegistry("//127.0.0.1:4567");
@@ -137,7 +137,7 @@ export const Studio = (props: {
   } = Preset as any;
 
   return loading || !Preset?.Form ? (
-    <ProSkeleton></ProSkeleton>
+    <PageLoading></PageLoading>
   ) : (
     <Designer engine={engine!} position="absolute">
       <StudioPanel

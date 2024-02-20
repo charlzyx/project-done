@@ -1,11 +1,27 @@
 import { PageContainer, ProLayout } from "@ant-design/pro-components";
 import { ConfigProvider } from "antd";
-import { ProConfigProvider, ProSkeleton } from "@ant-design/pro-components";
+import {
+  ProBreadcrumb,
+  ProConfigProvider,
+  ProSkeleton,
+} from "@ant-design/pro-components";
 import React, { useEffect, useRef, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Outlet,
+  useLocation,
+  useMatch,
+  useMatches,
+  useNavigate,
+  useRoutes,
+} from "react-router-dom";
 import { menus as getMenus } from "./menus";
 import { SWRProvider, supabase, useAuth } from "./request";
 import { menu } from "../services/menu";
+
+const FULLPAGE: React.CSSProperties = {
+  flex: 1,
+  overflow: "auto",
+};
 
 const remap = (list: any[]) => {
   const dynamic = list.reduce((ll, item) => {
@@ -14,7 +30,7 @@ const remap = (list: any[]) => {
     };
     if (item.children) {
       route.routes = remap(item.children);
-      route.path = `live_${item.id}`;
+      route.path = `/live_${item.id}`;
     } else {
       route.path = `/live/${item.id}`;
       route.link = `/live/${item.id}`;
@@ -24,7 +40,7 @@ const remap = (list: any[]) => {
   }, [] as any[]);
   return dynamic;
 };
-const useMenus = () => {
+export const useMenus = () => {
   const once = useRef(false);
 
   const [menus, setMenus] = useState(getMenus());
@@ -90,14 +106,13 @@ export const Layout: React.FC<React.PropsWithChildren> = (props) => {
                 <div
                   onClick={() => {
                     nav(item.link!, {});
-                    console.log(`🚀 ~ item:`, item);
                   }}
                 >
                   {dom}
                 </div>
               )}
             >
-              <PageContainer style={{ flex: 1, overflow: "auto" }}>
+              <PageContainer style={FULLPAGE}>
                 {loading ? (
                   <ProSkeleton type="result"></ProSkeleton>
                 ) : (

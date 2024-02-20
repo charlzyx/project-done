@@ -39,6 +39,7 @@ export const ActionsWidget = observer(
         Github
       </Button> */}
         <Button
+          type="primary"
           onClick={() => {
             const tree = saveSchema(designer);
             return props.onSave?.(tree);
